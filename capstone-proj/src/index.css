@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+  background-color: #f3fbff;
+}
+input {
+  border: 1px solid;
+  border-color: rgb(206, 206, 206);
+  border-radius: 5px;
+}
+
+input:hover {
+  border: 1px solid;
+  border-color: #64B5F6;
+}
