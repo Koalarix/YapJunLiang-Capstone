@@ -3,7 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 body {
-  background-color: #22223b;
+  /*background-color: #22223b;*/
+  background-image: linear-gradient(#22223b, #2e2e50 )
 }
 input {
   border: 1px solid;
