@@ -37,9 +37,19 @@ function Form() {
 
   const [purchase, setPurchase] = useState("")
 
-  const createNewStock = () => {
-    setIsEmpty(false);
-  }
+
+  useEffect(() => {
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
+    .then((res) => res.json())
+    .then((data) => {
+      const globalQuote = data["Global Quote"]
+      for (const data in globalQuote) {
+        if (data == "01. symbol" || data == "05. price") {
+        console.log(`${globalQuote[data]}`)
+      }}
+    })
+    .catch((err) => console.log("Error occured retrieving data"))
+  },[])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -49,23 +59,12 @@ function Form() {
     setPurchase("");
   }
 
-  useEffect(() => {
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
-    .then((res) => res.json())
-    .then((data) => {
-      const globalQuote = data["Global Quote"]
-      console.log(globalQuote)
-    })
-
-    .catch((err) => console.log("Error occured retrieving data"))
-  },[handleSubmit])
-
-
  return (
   <>
     <form  onSubmit={handleSubmit} className='h-full flex flex-col items-center font-title font-light'>
 
         <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center [@media(min-width:750px)]:flex-row">
+
           <input className="h-9 w-[10em] min-w-0 mx-2 [@media(min-width:750px)]:ml-4 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]"
           value={stock} onChange={(event) => setStock(event.target.value)} type="text" id="stock" name="stock" placeholder="Stock Symbol"></input>
 
@@ -74,11 +73,12 @@ function Form() {
 
           <input className="h-9 w-[10em] min-w-0 mx-2 [@media(min-width:750px)]:mr-4 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]" 
           value={purchase} onChange={(event) => setPurchase(event.target.value)} type="text" id="price" name="price" placeholder="Purchase Price"></input> 
+
         </div>
+
         <div className="size-full flex justify-center items-center">
 
-          <input className="h-8 w-[8rem] text-[0.75rem] font-bold text-white rounded-[5em] bg-[#fca311] 
-          border-none hover:border-none hover:bg-[#f19040ea] cursor-pointer
+          <input className="h-8 w-[8rem] text-[0.75rem] font-bold text-white rounded-[5em] bg-[#fca311] border-none hover:border-none hover:bg-[#f19040ea] cursor-pointer
           [@media(min-width:750px)]:w-[12rem] [@media(min-width:750px)]:h-[38px] [@media(min-width:750px)]:text-[1rem]" 
           type="submit" value="Add Stock"/>
 
@@ -91,7 +91,7 @@ function Form() {
 
 function StockDetails() {
 
-  const [isEmpty, setIsEmpty] = useState(true);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   return (
     <>
