@@ -2,7 +2,7 @@ import { useState } from "react";
 import StockLists from "./StockLists";
 import StockListsEmpty from "./StockListsEmpty";
 
-//Component for conditionally rendering + stacking stocklist as new form is
+//Component for conditionally rendering
 
 function StockContainer() {
 

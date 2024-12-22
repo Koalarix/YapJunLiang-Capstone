@@ -32,38 +32,44 @@ function Header() {
 
 function Form() {
 
+  const [submitted, setSubmitted] = useState(false)
+  
   const [stock, setStock] = useState("")
-
   const [quantity, setQuanitity] = useState("")
-
   const [purchase, setPurchase] = useState("")
-
+ 
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    setSubmitted(true)
+    setStock("");
+    setQuanitity("");
+    setPurchase("");
+    console.log(stock, quantity, purchase)
+  }
 
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
+useEffect(() => {
+   fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
     .then((res) => res.json())
     .then((data) => {
       const globalQuote = data["Global Quote"]
+      const stockSymbol = globalQuote["01. symbol"]
+      const currentPrice = globalQuote["05. price"]
+
       for (const data in globalQuote) {
-        if (stock === globalQuote["01. symbol"]) {
-        console.log(globalQuote["05. price"])
-      } break
+        if (stock === stockSymbol) {
+        console.log(currentPrice)
+      }
     }
     })
     .catch((err) => console.log("Error occured retrieving data"))
 
-    console.log(stock, quantity, purchase)
-    setStock("");
-    setQuanitity("");
-    setPurchase("");
-  }
+}, [[],submitted])
 
 
  return (
   <>
-    <form  onSubmit={handleSubmit} className='h-full flex flex-col items-center font-title font-light'>
+    <form onSubmit={handleSubmit} value={submitted} className='h-full flex flex-col items-center font-title font-light'>
 
         <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center [@media(min-width:750px)]:flex-row">
 
