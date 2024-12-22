@@ -37,8 +37,16 @@ function Form() {
 
   const [purchase, setPurchase] = useState("")
 
+  const [submitted, setSubmitted] = useState(false)
 
-  useEffect(() => {
+
+  // useEffect(() => {
+  
+  // },[])
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
     .then((res) => res.json())
     .then((data) => {
@@ -49,10 +57,7 @@ function Form() {
       }}
     })
     .catch((err) => console.log("Error occured retrieving data"))
-  },[])
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
     console.log(stock, quantity, purchase)
     setStock("");
     setQuanitity("");
