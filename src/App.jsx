@@ -56,6 +56,7 @@ function Form() {
       const globalQuote = data["Global Quote"]
       console.log(globalQuote)
     })
+
     .catch((err) => console.log("Error occured retrieving data"))
   },[handleSubmit])
 
