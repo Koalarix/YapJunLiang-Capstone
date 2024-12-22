@@ -42,17 +42,6 @@ function Form() {
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
-    // .then((res) => res.json())
-    // .then((data) => {
-    //   const globalQuote = data["Global Quote"]
-    //   for (const data in globalQuote) {
-    //     if (stock === "01. symbol" || data == "05. price") {
-    //     console.log(`${globalQuote[data]}`)
-    //   }}
-    // })
-    // .catch((err) => console.log("Error occured retrieving data"))
-
     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
     .then((res) => res.json())
     .then((data) => {
