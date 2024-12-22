@@ -2,7 +2,7 @@ import './App.css'
 import StockListsEmpty from './StockListsEmpty.jsx'
 import StockLists from './StockLists.jsx'
 import { useEffect, useState } from 'react'
-import StockDetails from './StockDetails.jsx'
+import StockContainer from './StockContainer.jsx'
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
           <Header />
           <Form/>
         </div>
-          <StockDetails />
+          <StockContainer />
       </div>
     </div>
  
@@ -39,22 +39,29 @@ function Form() {
   const [purchase, setPurchase] = useState("")
 
 
-
-  // useEffect(() => {
-  
-  // },[])
-
   const handleSubmit = (event) => {
     event.preventDefault()
+
+    // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
+    // .then((res) => res.json())
+    // .then((data) => {
+    //   const globalQuote = data["Global Quote"]
+    //   for (const data in globalQuote) {
+    //     if (stock === "01. symbol" || data == "05. price") {
+    //     console.log(`${globalQuote[data]}`)
+    //   }}
+    // })
+    // .catch((err) => console.log("Error occured retrieving data"))
 
     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
     .then((res) => res.json())
     .then((data) => {
       const globalQuote = data["Global Quote"]
       for (const data in globalQuote) {
-        if (data == "01. symbol" || data == "05. price") {
-        console.log(`${globalQuote[data]}`)
-      }}
+        if (stock === globalQuote["01. symbol"]) {
+        console.log(globalQuote["05. price"])
+      } break
+    }
     })
     .catch((err) => console.log("Error occured retrieving data"))
 
@@ -63,6 +70,7 @@ function Form() {
     setQuanitity("");
     setPurchase("");
   }
+
 
  return (
   <>

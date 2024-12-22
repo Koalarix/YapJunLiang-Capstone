@@ -2,7 +2,9 @@ import { useState } from "react";
 import StockLists from "./StockLists";
 import StockListsEmpty from "./StockListsEmpty";
 
-function StockDetails() {
+//Component for conditionally rendering + stacking stocklist as new form is
+
+function StockContainer() {
 
   const [isEmpty, setIsEmpty] = useState(false);
 
@@ -18,4 +20,4 @@ function StockDetails() {
   )
 }
 
-export default StockDetails
+export default StockContainer
