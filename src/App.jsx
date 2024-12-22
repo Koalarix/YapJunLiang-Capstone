@@ -1,11 +1,13 @@
 import './App.css'
-import './StockListsEmpty.jsx'
+import StockListsEmpty from './StockListsEmpty.jsx'
+import StockLists from './StockLists.jsx'
+import { useEffect, useState } from 'react'
 
 function App() {
   return (
     <>
-    <div class="h-dvh w-full flex justify-center items-center border border-red-600">
-      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg border border-yellow-300'>
+    <div className="h-dvh w-full flex justify-center items-center">
+      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
         <div className="h-[16em] flex flex-col">
           <Header />
           <Form/>
@@ -28,19 +30,49 @@ function Header() {
 }
 
 function Form() {
+
+  const [stock, setStock] = useState("")
+
+  const [quantity, setQuanitity] = useState("")
+
+  const [purchase, setPurchase] = useState("")
+
+  const createNewStock = () => {
+    setIsEmpty(false);
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    console.log(stock, quantity, purchase)
+    setStock("");
+    setQuanitity("");
+    setPurchase("");
+  }
+
+  useEffect(() => {
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
+    .then((res) => res.json())
+    .then((data) => {
+      const globalQuote = data["Global Quote"]
+      console.log(globalQuote)
+    })
+    .catch((err) => console.log("Error occured retrieving data"))
+  },[handleSubmit])
+
+
  return (
   <>
-    <form  className='h-full flex flex-col items-center font-title font-light'>
+    <form  onSubmit={handleSubmit} className='h-full flex flex-col items-center font-title font-light'>
 
-        <div  className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center [@media(min-width:750px)]:flex-row">
-          <input className="h-9 w-[10em] min-w-0 mx-2 [@media(min-width:750px)]:ml-4 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]" 
-          type="text" id="stock" name="stock" placeholder="Stock Symbol"></input>
+        <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center [@media(min-width:750px)]:flex-row">
+          <input className="h-9 w-[10em] min-w-0 mx-2 [@media(min-width:750px)]:ml-4 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]"
+          value={stock} onChange={(event) => setStock(event.target.value)} type="text" id="stock" name="stock" placeholder="Stock Symbol"></input>
 
           <input className=" h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]" 
-          type="text" id="quantity" name="quantity" placeholder="Quantity" ></input>
+          value={quantity} onChange={(event) => setQuanitity(event.target.value)} type="text" id="quantity" name="quantity" placeholder="Quantity" ></input>
 
           <input className="h-9 w-[10em] min-w-0 mx-2 [@media(min-width:750px)]:mr-4 pl-3 placeholder:italic placeholder:text-[0.8em] [@media(min-width:750px)]:placeholder:text-[1em]" 
-          type="text" id="price" name="price" placeholder="Purchase Price"></input> 
+          value={purchase} onChange={(event) => setPurchase(event.target.value)} type="text" id="price" name="price" placeholder="Purchase Price"></input> 
         </div>
         <div className="size-full flex justify-center items-center">
 
@@ -57,12 +89,15 @@ function Form() {
 }
 
 function StockDetails() {
+
+  const [isEmpty, setIsEmpty] = useState(true);
+
   return (
     <>
       <section className="font-title h-full"> 
         <h2 className="text-[1.1rem] [@media(min-width:750px)]:text-[1.6em] w-full text-center text-white font-bold">Stock List</h2>
         <div className="h-full flex justify-center">
-          <StockListsEmpty />
+          {isEmpty ?  <StockListsEmpty /> : <StockLists />}
         </div>  
       </section>
     </>
@@ -70,25 +105,10 @@ function StockDetails() {
 }
 
 
-function StockListsEmpty() {
-  return (
-  <div className="bg-[#5e6381] w-[80%] h-[12rem] mb-10 text-center rounded-md border border-[#969ab6] flex justify-center items-center">
-    <p className="text-[#9aa0bb] text-[0.75rem] [@media(min-width:750px)]:text-[1em]">No stocks added yet.</p>
-  </div>
-  )
-}
-
-
-function StockLists() {
-  return (
-  <div>
-    <h3>Symbol:</h3>
-    <p>Quantity:</p>
-    <p>Purchase Price:</p>
-    <p>Current Price:</p>
-  </div>
-  )
-}
-
-
 export default App
+
+
+//* Consider implementing conditional rendering to switch between 
+// displaying the StockListsEmpty and StockLists components. 
+// For example, you can use a ternary operator or logical conditions
+//  to decide which component to render based on the state of the stock list.

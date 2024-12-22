@@ -16,3 +16,7 @@ input:hover {
   border: 1px solid;
   border-color: #64B5F6;
 }
+
+.profit-loss {
+  color: rgb(56, 255, 146);
+}
