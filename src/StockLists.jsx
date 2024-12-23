@@ -1,19 +1,21 @@
 
-function StockLists() {
+function StockLists(StockData) {
   
   return (
   <div className="bg-[#5e6381] w-[80%] h-[12rem] mb-10 pt-0 text-center rounded-md border border-[#969ab6] flex justify-center items-center">
-   <StockListBlock />
+   <StockListBlock StockData={StockData}/>
   </div>
   
   )
 }
 
 
-function StockListBlock() {
+function StockListBlock({StockData}) {
+
+
   return (
-    <section className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem] [@media(min-width:750px)]:text-[1em]">
-      <h3 className="text-[1.35em] text-white font-bold">Symbol: APPL</h3>
+    <section id="stocklistblock" className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem]">
+      <h3 className="text-[1.35em] text-white font-bold">{`Symbol: ${StockData}`}</h3>
       <p>Quantity: 100</p>
       <p>Purchase Price: 500</p>
       <p>Current Price: 1000</p>

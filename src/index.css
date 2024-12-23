@@ -21,3 +21,61 @@ input:hover {
 .profit-loss {
   color: rgb(56, 255, 146);
 }
+
+
+/* /////Responsive CSS////////*/
+@media  (min-width: 750px) {
+
+  h1 {
+    font-size: 2.3em;
+  }
+
+  h2 {
+    font-size: 1.6em;
+  }
+  
+ #input-container {
+  flex-direction: row;
+} 
+
+  #stock {
+    margin-left: 1rem;
+}
+
+#price {
+  margin-right: 1rem;
+}
+
+#stock::placeholder, 
+#quantity::placeholder,
+#price::placeholder  {
+  font-size: 1em;
+}
+
+#submitBtn {
+  width: 12rem;
+  height: 38px;
+  font-size: 1rem;
+
+}
+
+#stocklistblock {
+  font-size: 1em;
+}
+
+}
+
+/*////////End of responsive CSS//////// */
+
+
+
+#submitBtn {
+  border: none;
+  background-color: #fca311 ;
+}
+
+#submitBtn:hover {
+  border: none;
+  background-color: #f19040ea;
+  cursor: pointer;
+}
