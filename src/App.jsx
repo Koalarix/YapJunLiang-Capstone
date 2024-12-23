@@ -37,10 +37,22 @@ function Form() {
   const [purchase, setPurchase] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(false)
 
+  const [StockData, setStockData] = useState("")
+
   const handleSubmit = (event) => {
     event.preventDefault()
     setFormSubmitted(true)
     console.log(`Form Submitted ${stock}, ${quantity}, ${purchase}`)
+  }
+
+  const resetForm = () => {
+    if (formSubmitted === true) {
+    setFormSubmitted(false)
+    setStock("")
+    setQuanitity("")
+    setPurchase("")
+    setFormSubmitted("")
+    }
   }
 
 useEffect(() => {
@@ -48,23 +60,29 @@ useEffect(() => {
     .then((res) => res.json())
     .then((data) => {
 
-      const globalQuote = data["Global Quote"]
+      //renaming specific data points from API for easier use
+      const globalQuote = data["Global Quote"] 
       const stockSymbol = globalQuote["01. symbol"]
       const currentPrice = globalQuote["05. price"]
 
          if (formSubmitted === true && stock === stockSymbol) {
             for (const data in globalQuote) {
-              console.log(`${stockSymbol}: ${currentPrice}`)
+              console.log(`${stockSymbol}: ${currentPrice}, Quantity: ${quantity}, Purchase Price:${purchase}`) //checking if form response works
+
+              let stockData = [stockSymbol, currentPrice, quantity, purchase]
+              // console.log(stockData) //checking if it works
+              setStockData(stockData)
+              // console.log(`This is stockdata from the setStockData state function ${StockData}`) // for testing
               break;
           }
         } else if (formSubmitted === true && stock !== stockSymbol) {
-          console.log("Stock not found")
+          console.log("Stock not found") //Possiblity to add display validation alert to user
         }
     })
     .catch((err) => console.log("Error occured retrieving data"))
-    .finally(setFormSubmitted(false))
+    .finally(resetForm)
 
-}, [stock, formSubmitted])
+}, [formSubmitted, stock, quantity, purchase])
 
 
  return (
