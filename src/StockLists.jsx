@@ -1,19 +1,26 @@
 
-function StockLists() {
+function StockLists(StockData) {
   
   return (
   <div className="bg-[#5e6381] w-[80%] h-[12rem] mb-10 pt-0 text-center rounded-md border border-[#969ab6] flex justify-center items-center">
-   <StockListBlock />
+   <StockListBlock StockData={StockData}/>
   </div>
   
   )
 }
 
 
-function StockListBlock() {
+function StockListBlock({StockData}) {
+  // const stockSymbol = StockData[0];
+  // const currentPrice = StockData[1];
+  // const quantity = StockData[2];
+  // const purchase = StockData[3];
+
+  // console.log(`This is console log in StockLists, here is the data recieved ${stockSymbol}${currentPrice}${quantity}${purchase}`)
+
   return (
     <section id="stocklistblock" className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem]">
-      <h3 className="text-[1.35em] text-white font-bold">Symbol: APPL</h3>
+      <h3 className="text-[1.35em] text-white font-bold">{`Symbol: ${StockData}`}</h3>
       <p>Quantity: 100</p>
       <p>Purchase Price: 500</p>
       <p>Current Price: 1000</p>

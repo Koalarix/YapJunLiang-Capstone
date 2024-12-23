@@ -5,15 +5,18 @@ import { useEffect, useState } from 'react'
 import StockContainer from './StockContainer.jsx'
 
 function App() {
+
+  const [StockData, setStockData] = useState("")
+
   return (
     <>
     <div className="h-dvh w-full flex justify-center items-center">
       <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
         <div className="h-[16em] flex flex-col">
           <Header />
-          <Form/>
+          <Form StockData={StockData} setStockData={setStockData}/>
         </div>
-          <StockContainer />
+          <StockContainer StockData={StockData} />
       </div>
     </div>
  
@@ -30,14 +33,12 @@ function Header() {
   )
 }
 
-function Form() {
+function Form({StockData, setStockData}) {
  
   const [stock, setStock] = useState("")
   const [quantity, setQuanitity] = useState("")
   const [purchase, setPurchase] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(false)
-
-  const [StockData, setStockData] = useState("")
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -51,7 +52,6 @@ function Form() {
     setStock("")
     setQuanitity("")
     setPurchase("")
-    setFormSubmitted("")
     }
   }
 
@@ -69,10 +69,11 @@ useEffect(() => {
             for (const data in globalQuote) {
               console.log(`${stockSymbol}: ${currentPrice}, Quantity: ${quantity}, Purchase Price:${purchase}`) //checking if form response works
 
-              let stockData = [stockSymbol, currentPrice, quantity, purchase]
-              // console.log(stockData) //checking if it works
+              let stockData = [stockSymbol, currentPrice, quantity, purchase] 
+              console.log(`This is stockData array ${stockData}`) //checking if it works
+
               setStockData(stockData)
-              // console.log(`This is stockdata from the setStockData state function ${StockData}`) // for testing
+              console.log(`This is setStockData state function ${StockData}`) // for testing
               break;
           }
         } else if (formSubmitted === true && stock !== stockSymbol) {
@@ -80,10 +81,9 @@ useEffect(() => {
         }
     })
     .catch((err) => console.log("Error occured retrieving data"))
-    .finally(resetForm)
+    .finally(resetForm) //Call external function to execute after getting data, to reset inputs back into empty & FormSubmitted back to false
 
-}, [formSubmitted, stock, quantity, purchase])
-
+}, [formSubmitted, stock, quantity, purchase, StockData])
 
  return (
   <>
