@@ -12,7 +12,7 @@ function StockLists() {
 
 function StockListBlock() {
   return (
-    <section className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem] [@media(min-width:750px)]:text-[1em]">
+    <section id="stocklistblock" className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem]">
       <h3 className="text-[1.35em] text-white font-bold">Symbol: APPL</h3>
       <p>Quantity: 100</p>
       <p>Purchase Price: 500</p>
