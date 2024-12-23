@@ -11,12 +11,7 @@ function StockLists(StockData) {
 
 
 function StockListBlock({StockData}) {
-  // const stockSymbol = StockData[0];
-  // const currentPrice = StockData[1];
-  // const quantity = StockData[2];
-  // const purchase = StockData[3];
 
-  // console.log(`This is console log in StockLists, here is the data recieved ${stockSymbol}${currentPrice}${quantity}${purchase}`)
 
   return (
     <section id="stocklistblock" className="h-full w-100 flex flex-col justify-center items-center pb-[1.5em] text-[#afb2c4] text-[0.68rem]">
