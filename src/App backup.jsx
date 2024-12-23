@@ -32,35 +32,25 @@ function Header() {
 
 function Form() {
  
-  //check state of form and store infomation
-  const [formData, setFormData] = useState({
-    stock:"",
-    quantity:"",
-    purchase:"",
-    currentPrice:""
-  })
-
-  //check state of form submission
+  const [stock, setStock] = useState("")
+  const [quantity, setQuanitity] = useState("")
+  const [purchase, setPurchase] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(false)
 
-  //check state of stock symbol input validation
-  const [stockValid, setStockValid] = useState(false)
+  const [StockData, setStockData] = useState("")
 
   const handleSubmit = (event) => {
     event.preventDefault()
     setFormSubmitted(true)
+    console.log(`Form Submitted ${stock}, ${quantity}, ${purchase}`)
   }
 
-// reset form to default
   const resetForm = () => {
     if (formSubmitted === true) {
-    setFormSubmitted(false)  
-    setFormData({...formData,
-      stock:"",
-      quantity:"",
-      purchase:""
-    })
-    setStockValid(false)
+    setFormSubmitted(false)
+    setStock("")
+    setQuanitity("")
+    setPurchase("")
     }
   }
 
@@ -72,28 +62,30 @@ useEffect(() => {
       //renaming specific data points from API for easier use
       const globalQuote = data["Global Quote"]
       const stockSymbol = globalQuote["01. symbol"]
-      const price = globalQuote["05. price"]
+      const currentPrice = globalQuote["05. price"]
 
          if (formSubmitted === true) {
             for (data in globalQuote) {
-              if (formData.stock === stockSymbol) {
-                setStockValid(true);
-                setFormData({...formData, currentPrice: {price}});
-                console.log(`Current Price: ${price}`);
-                console.log(`Form Submitted with user data ${formData.stock}, ${formData.quantity}, ${formData.purchase} and API data here: ${formData.currentPrice}`)
+              if (stock === stockSymbol) {
+                console.log(`${stockSymbol}, Current Price: ${currentPrice}, Quantity: ${quantity}, Purchase Price:${purchase}`) //checking if form response works
+
+                // let stockData = [stockSymbol, currentPrice, quantity, purchase]
+                // console.log(stockData) //checking if it works
+
+                // setStockData(stockData)
+                // console.log(`This is stockdata from the setStockData state function ${StockData}`) // for testing
                 break;
 
-              } else if (formSubmitted === true && formData.stock !== stockSymbol) {
-                console.log("Stock not found")//Possiblity to add display validation alert to user
-                break;
-              }
-            }
-          } 
-        })
+          } else if (formSubmitted === true && stock !== stockSymbol) {
+            console.log("Stock not found")//Possiblity to add display validation alert to user
+            break;
+          }
+        }} 
+    })
     .catch((err) => console.log("Error occured retrieving data"))
     .finally(resetForm) //Call external function to execute after getting data, to reset inputs back into empty & FormSubmitted back to false
 
-}, [formSubmitted, setFormData])
+}, [formSubmitted, stock, quantity, purchase])
 
  return (
   <>
@@ -102,24 +94,24 @@ useEffect(() => {
         <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center" id="input-container">
 
           <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.stock}
-          onChange={(event) => setFormData({...formData, stock: event.target.value})}
+          value={stock}
+          onChange={(event) => setStock(event.target.value)}
           type="text"
           id="stock"
           name="stock"
           placeholder="Stock Symbol"></input>
 
           <input className=" h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.quantity}
-          onChange={(event) => setFormData({...formData, quantity: event.target.value})}
+          value={quantity}
+          onChange={(event) => setQuanitity(event.target.value)}
           type="text"
           id="quantity"
           name="quantity"
           placeholder="Quantity" ></input>
 
           <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.purchase}
-          onChange={(event) => setFormData({...formData, purchase: event.target.value})}
+          value={purchase}
+          onChange={(event) => setPurchase(event.target.value)}
           type="text"
           id="price"
           name="price"
