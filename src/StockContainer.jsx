@@ -18,6 +18,7 @@ function StockContainer({}) {
       </section>
     </>
   )
+  
 }
 
 export default StockContainer

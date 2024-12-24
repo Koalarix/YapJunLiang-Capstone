@@ -1,6 +1,4 @@
 import './App.css'
-import StockListsEmpty from './StockListsEmpty.jsx'
-import StockLists from './StockLists.jsx'
 import { useEffect, useState } from 'react'
 import StockContainer from './StockContainer.jsx'
 
@@ -33,7 +31,7 @@ function Header() {
 function Form() {
  
   const [userStock, setUserStock] = useState("")
-  const [userQuant, setUserQuant] = useState("")
+  const [userQuantity, setUserQuantity] = useState("")
   const [userPurchase, setUserPurchase] = useState("")
   const [currentPrice, setCurrentPrice] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(false)
@@ -49,15 +47,14 @@ useEffect(() => {
     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo")
      .then((res) => res.json())
      .then((data) => {
-      const currPrice = data["Global Quote"]["05. price"]
-      setCurrentPrice(currPrice)
+      setCurrentPrice(data["Global Quote"]["05. price"])
      })
      .catch(error => {console.log("Invalid Stock Symbol" + " " + error)})
      .finally(() => {setFormSubmitted(false)})
     }
  }, [formSubmitted])
 
- // for me to check if the data is logged into the state // can be deleted when deploying
+ // for me to check if the API data is logged into the state // can be deleted when deploying
  useEffect(() => {
   console.log(`This is to check if it logged into state, Current Price is: ${currentPrice}`);
 }, [currentPrice]);
@@ -71,15 +68,15 @@ useEffect(() => {
 
           <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
           value={userStock}
-          onChange={(event) => setUserStock(event.target.value)}
+          onChange={(event) => setUserStock(event.target.value.toLocaleUpperCase())} //Prevent cases of lower case Stock Symbols being submitted
           type="text"
           id="stock"
           name="stock"
           placeholder="Stock Symbol"></input>
 
           <input className=" h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={userQuant}
-          onChange={(event) => setUserQuant(event.target.value)}
+          value={userQuantity}
+          onChange={(event) => setUserQuantity(event.target.value)}
           type="number"
           id="quantity"
           name="quantity"
