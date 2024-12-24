@@ -32,68 +32,36 @@ function Header() {
 
 function Form() {
  
-  //check state of form and store infomation
-  const [formData, setFormData] = useState({
-    stock:"",
-    quantity:"",
-    purchase:"",
-    currentPrice:""
-  })
-
-  //check state of form submission
+  const [userStock, setUserStock] = useState("")
+  const [userQuant, setUserQuant] = useState("")
+  const [userPurchase, setUserPurchase] = useState("")
+  const [currentPrice, setCurrentPrice] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(false)
 
-  //check state of stock symbol input validation
-  const [stockValid, setStockValid] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault()
     setFormSubmitted(true)
   }
 
-// reset form to default
-  const resetForm = () => {
-    if (formSubmitted === true) {
-    setFormSubmitted(false)  
-    setFormData({...formData,
-      stock:"",
-      quantity:"",
-      purchase:""
-    })
-    setStockValid(false)
-    }
-  }
-
 useEffect(() => {
-   fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
-    .then((res) => res.json())
-    .then((data) => {
+  if(formSubmitted) {
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo")
+     .then((res) => res.json())
+     .then((data) => {
+      const currPrice = data["Global Quote"]["05. price"]
+      setCurrentPrice(currPrice)
+     })
+     .catch(error => {console.log("Invalid Stock Symbol" + " " + error)})
+     .finally(() => {setFormSubmitted(false)})
+    }
+ }, [formSubmitted])
 
-      //renaming specific data points from API for easier use
-      const globalQuote = data["Global Quote"]
-      const stockSymbol = globalQuote["01. symbol"]
-      const price = globalQuote["05. price"]
+ // for me to check if the data is logged into the state // can be deleted when deploying
+ useEffect(() => {
+  console.log(`This is to check if it logged into state, Current Price is: ${currentPrice}`);
+}, [currentPrice]);
 
-         if (formSubmitted === true) {
-            for (data in globalQuote) {
-              if (formData.stock === stockSymbol) {
-                setStockValid(true);
-                setFormData({...formData, currentPrice: {price}});
-                console.log(`Current Price: ${price}`);
-                console.log(`Form Submitted with user data ${formData.stock}, ${formData.quantity}, ${formData.purchase} and API data here: ${formData.currentPrice}`)
-                break;
-
-              } else if (formSubmitted === true && formData.stock !== stockSymbol) {
-                console.log("Stock not found")//Possiblity to add display validation alert to user
-                break;
-              }
-            }
-          } 
-        })
-    .catch((err) => console.log("Error occured retrieving data"))
-    .finally(resetForm) //Call external function to execute after getting data, to reset inputs back into empty & FormSubmitted back to false
-
-}, [formSubmitted, setFormData])
 
  return (
   <>
@@ -102,25 +70,25 @@ useEffect(() => {
         <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center" id="input-container">
 
           <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.stock}
-          onChange={(event) => setFormData({...formData, stock: event.target.value})}
+          value={userStock}
+          onChange={(event) => setUserStock(event.target.value)}
           type="text"
           id="stock"
           name="stock"
           placeholder="Stock Symbol"></input>
 
           <input className=" h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.quantity}
-          onChange={(event) => setFormData({...formData, quantity: event.target.value})}
-          type="text"
+          value={userQuant}
+          onChange={(event) => setUserQuant(event.target.value)}
+          type="number"
           id="quantity"
           name="quantity"
           placeholder="Quantity" ></input>
 
           <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.purchase}
-          onChange={(event) => setFormData({...formData, purchase: event.target.value})}
-          type="text"
+          value={userPurchase}
+          onChange={(event) => setUserPurchase(event.target.value)}
+          type="number"
           id="price"
           name="price"
           placeholder="Purchase Price"></input>
@@ -143,6 +111,9 @@ useEffect(() => {
 
 export default App
 
+//* Consider breaking the header section and input section into separate components as well.
+// Similarly, StockListsEmpty and StockLists components should be placed in different files to enhance code organization and maintainability. 
+// This makes it easier to debug and reuse individual components.
 
 //* Consider implementing conditional rendering to switch between
 // displaying the StockListsEmpty and StockLists components.
