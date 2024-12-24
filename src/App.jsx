@@ -1,17 +1,41 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import StockContainer from './StockContainer.jsx'
+import StockDataContext from './contexts/StockdataContext.js'
+
 
 function App() {
+  const [userStock, setUserStock] = useState("");
+  const [userQuantity, setUserQuantity] = useState("");
+  const [userPurchase, setUserPurchase] = useState("");
+  const [currentPrice, setCurrentPrice] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false)
+  
   return (
     <>
     <div className="h-dvh w-full flex justify-center items-center">
       <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
         <div className="h-[16em] flex flex-col">
           <Header />
-          <Form/>
+            <StockDataContext.Provider value={{ 
+              userStock, setUserStock, 
+              userQuantity, setUserQuantity, 
+              userPurchase, setUserPurchase, 
+              currentPrice, setCurrentPrice,
+              formSubmitted, setFormSubmitted
+              }} >
+             <Form/>
+            </StockDataContext.Provider>
         </div>
-          <StockContainer />
+        <StockDataContext.Provider value={{ 
+              userStock, setUserStock, 
+              userQuantity, setUserQuantity, 
+              userPurchase, setUserPurchase, 
+              currentPrice, setCurrentPrice,
+              formSubmitted, setFormSubmitted
+              }} >
+            <StockContainer />
+          </StockDataContext.Provider>
       </div>
     </div>
  
@@ -22,19 +46,22 @@ function App() {
 function Header() {
   return (
     <header className="flex flex-col items-center">
-    <h1 className='w-full text-[1.25rem] pt-6 pb-4 font-title font-bold text-white text-center'>Finance Dashboard</h1>
-    <hr className="w-[90%]"></hr>
+      <h1 className='w-full text-[1.25rem] pt-6 pb-4 font-title font-bold text-white text-center'>Finance Dashboard</h1>
+      <hr className="w-[90%]"></hr>
     </header>
   )
 }
 
 function Form() {
  
-  const [userStock, setUserStock] = useState("")
-  const [userQuantity, setUserQuantity] = useState("")
-  const [userPurchase, setUserPurchase] = useState("")
-  const [currentPrice, setCurrentPrice] = useState("")
-  const [formSubmitted, setFormSubmitted] = useState(false)
+  const {
+    userStock, setUserStock,
+    userQuantity, setUserQuantity,
+    userPurchase, setUserPurchase,
+    currentPrice, setCurrentPrice,
+    formSubmitted, setFormSubmitted
+  } = useContext(StockDataContext);
+
 
 
   const handleSubmit = (event) => {
@@ -49,8 +76,8 @@ useEffect(() => {
      .then((data) => {
       setCurrentPrice(data["Global Quote"]["05. price"])
      })
-     .catch(error => {console.log("Invalid Stock Symbol" + " " + error)})
-     .finally(() => {setFormSubmitted(false)})
+     .catch(error => {console.log("Invalid Stock Symbol - URL will be invalid")})
+    //  .finally(() => {setFormSubmitted(false)})
     }
  }, [formSubmitted])
 

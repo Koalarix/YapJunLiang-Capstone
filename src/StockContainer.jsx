@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import StockLists from "./StockLists";
 import StockListsEmpty from "./StockListsEmpty";
+import StockDataContext from "./contexts/StockdataContext";
 
 //Component for conditionally rendering
 
-function StockContainer({}) {
+function StockContainer() {
 
-  const [isEmpty, setIsEmpty] = useState(false);
+  const {formSubmitted} = useContext(StockDataContext);
+
+  const [isEmpty, setIsEmpty] = useState(true);
+
+
+useEffect(() => {
+  if(formSubmitted) {
+    setTimeout(() => {
+      setIsEmpty(false); 
+    },500)
+  
+  }    
+}, [formSubmitted])
 
   return (
     <>
