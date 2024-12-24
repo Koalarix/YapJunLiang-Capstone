@@ -1,8 +1,11 @@
 import './App.css'
 import { useContext, useEffect, useState } from 'react'
-import StockContainer from './StockContainer.jsx'
 import StockDataContext from './contexts/StockdataContext.js'
+import StockListsEmpty from './StockListsEmpty.jsx';
+import StockLists from './StockLists.jsx';
 
+//For simplifying all the input details, to try when there is time
+//https://www.youtube.com/watch?v=-KBS93RlUCY
 
 function App() {
   const [userStock, setUserStock] = useState("");
@@ -15,7 +18,6 @@ function App() {
     <>
     <div className="h-dvh w-full flex justify-center items-center">
       <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
-        <div className="h-[16em] flex flex-col">
           <Header />
             <StockDataContext.Provider value={{ 
               userStock, setUserStock, 
@@ -25,17 +27,8 @@ function App() {
               formSubmitted, setFormSubmitted
               }} >
              <Form/>
+             <StockContainer />
             </StockDataContext.Provider>
-        </div>
-        <StockDataContext.Provider value={{ 
-              userStock, setUserStock, 
-              userQuantity, setUserQuantity, 
-              userPurchase, setUserPurchase, 
-              currentPrice, setCurrentPrice,
-              formSubmitted, setFormSubmitted
-              }} >
-            <StockContainer />
-          </StockDataContext.Provider>
       </div>
     </div>
  
@@ -62,12 +55,18 @@ function Form() {
     formSubmitted, setFormSubmitted
   } = useContext(StockDataContext);
 
-
-
   const handleSubmit = (event) => {
     event.preventDefault()
     setFormSubmitted(true)
   }
+
+  function resetFormInputs() {
+    setUserStock("")
+    setUserQuantity("")
+    setUserPurchase("")
+    setFormSubmitted(false)
+  }
+
 
 useEffect(() => {
   if(formSubmitted) {
@@ -76,8 +75,11 @@ useEffect(() => {
      .then((data) => {
       setCurrentPrice(data["Global Quote"]["05. price"])
      })
-     .catch(error => {console.log("Invalid Stock Symbol - URL will be invalid")})
-    //  .finally(() => {setFormSubmitted(false)})
+     .catch(error => {
+      console.log("Invalid Stock Symbol - reseting form");
+      resetFormInputs();
+    })
+
     }
  }, [formSubmitted])
 
@@ -132,17 +134,37 @@ useEffect(() => {
 }
 
 
+function StockContainer() {
+
+  const {formSubmitted, currentPrice} = useContext(StockDataContext);
+
+  const [isEmpty, setIsEmpty] = useState(true);
+
+useEffect(() => {
+  if(formSubmitted &&  currentPrice) {
+    setTimeout(() => {
+      setIsEmpty(false); 
+    },500)
+  
+  }    
+}, [currentPrice])
+
+  return (
+    <>
+      <section className="font-title h-full"> 
+        <h2 className="text-[1.1rem] w-full text-center text-white font-bold">Stock List</h2>
+        <div className="h-full mb-10 flex justify-center">
+          {isEmpty ?  <StockListsEmpty /> : <StockLists />}
+        </div>  
+      </section>
+    </>
+  )
+  
+}
+
 
 export default App
 
-//* Consider breaking the header section and input section into separate components as well.
-// Similarly, StockListsEmpty and StockLists components should be placed in different files to enhance code organization and maintainability. 
-// This makes it easier to debug and reuse individual components.
-
-//* Consider implementing conditional rendering to switch between
-// displaying the StockListsEmpty and StockLists components.
-// For example, you can use a ternary operator or logical conditions
-//  to decide which component to render based on the state of the stock list.
 
 // Fetch the current stock prices from the API when the component mounts and
 // whenever the stock list is updated.
