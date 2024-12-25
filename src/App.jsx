@@ -73,8 +73,8 @@ function Form() {
 
 
   const getStockPrice = useCallback(() =>{
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo
-    // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
+    // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
      .then((res) => res.json())
      .then((data) => {
       setCurrentPrice(data["Global Quote"]["05. price"])
