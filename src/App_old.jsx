@@ -5,6 +5,8 @@ import StockListsEmpty from './StockListsEmpty.jsx';
 import StockLists from './StockLists.jsx';
 import { useCallback } from 'react';
 
+//file is working, but it will log out invalid Symbol with user input without getting API data
+//save for testing
 
 
 //For simplifying all the input details, to try when there is time
@@ -72,72 +74,33 @@ function Form() {
     console.log("Stock not found - Reset input fields and formSubmit to false!")
   }
 
-  const checkStockValid = useCallback(()=>[
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo Comment off on deploy
+
+// fetch without Stock Symbol Validation - it will log out the invalid symbol with the user input without fetching prices [BUG]
+  const getStockPrice = useCallback(() =>{
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo
     // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
-    .then((res) => res.json())
+     .then((res) => res.json())
      .then((data) => {
+      setCurrentPrice(data["Global Quote"]["05. price"])
+     })
+     .catch(error => {
+      console.error("Invalid Stock Symbol - Please input a valid Stock Symbol! reseting form");
+      resetFormInputs();
+    })
+  },[userStock])
 
 
+useEffect(() => {
+  if(formSubmitted) {
+    getStockPrice();
+    }
+ }, [formSubmitted, getStockPrice])
 
-  //     if(Object.keys(data["Global Quote"]).length === 0 ) {    // invalid stock symbol returns empty object
-  //       console.error("Invalid Stock Symbol : recieved empty object - reseting form");
-
-  //       resetFormInputs();
-
-  //     } else if(Object.keys(data["Global Quote"]).length > 0){  
-  //         setCurrentPrice(data["Global Quote"]["05. price"])        
-  //     }
-  //    })
-  // ]
-  // ,[formSubmitted, userStock])
-
-
-
-
-// have to check for "Information" key as that is in the JSON file of the AlphaVantage message
-// but should use above when you get the API key available to check if the 
-
-  if(data["Information"]) { 
-
-    console.error("Invalid Stock Symbol Received AlphaVantage demo message- reseting form"); // this is to test logic with the demo key
-    resetFormInputs();
-
-  } else if(Object.keys(data["Global Quote"]).length > 0) {
-    setCurrentPrice(data["Global Quote"]["05. price"])        
-  }
-    
- })
-]
-,[formSubmitted, userStock])
-
-
-
-
-// fetch without Stock Symbol Validation - it will log out the invalid symbol with the user input without fetching prices
-  // const getStockPrice = useCallback(() =>{
-  //   // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo
-  //   fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
-  //    .then((res) => res.json())
-  //    .then((data) => {
-  //     setCurrentPrice(data["Global Quote"]["05. price"])
-  //    })
-  //    .catch(error => {
-  //     console.error("Invalid Stock Symbol - Please input a valid Stock Symbol! reseting form");
-  //     resetFormInputs();
-  //   })
-  // },[userStock])
-
-// useEffect(() => {
-//   if(formSubmitted) {
-//     getStockPrice();
-//     }
-//  }, [formSubmitted, getStockPrice])
 
  // for me to check if the API data is logged into the state// comment out on deploy
-//  useEffect(() => {
-//   console.log(`This is to check if it logged into state, Current Price is: ${currentPrice}`);
-// }, [currentPrice]);
+ useEffect(() => {
+  console.log(`This is to check if it logged into state, Current Price is: ${currentPrice}`);
+}, [currentPrice]);
 
 
  return (
