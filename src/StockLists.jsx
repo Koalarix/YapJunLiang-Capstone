@@ -27,18 +27,18 @@ function StockLists() {
   }
 
 
-  // Update new data into array of objects in stockData
   useEffect(()=>{
-    if(formSubmitted) 
-      {newStockData()} //Purpose of this useEffect - to call newStockData function whenever currentPrice is updated after button press
-    }, [currentPrice]) //currentprice because its the slowest data to update compared to the user input data
+    if(formSubmitted) {   
+      newStockData()
+    }}, [currentPrice]) 
 
-// call reset to input and formsubmission state after the new Lists get rendered
+
   useEffect(() => {
     console.log("1 list updated");
     console.log(stockData) //this is for me to check if the userData gets updated
     resetFormInputs();
   },[stockData])
+
 
   function resetFormInputs() {
     setUserStock("")
@@ -76,19 +76,10 @@ function StockLists() {
 export default StockLists
 
 
-
-
-  //New Empty array to input all the collected data into an array of objects
-  //where index[0] will be the first input with necessary details in key value pairs
-  //e.g stockDataList = [ {Symbol: IBM, Quantity: 10, Purchase: 200, Current: 250.32 }, { another object here for 2nd input} ...etc]
-  
-  //Update array of objects https://www.youtube.com/watch?v=Y62mbztjmus
-
-
   // Personal note
-  // previously this if(formSubmitted) condition was not added to the useEffect used to update new Data- caused a bug
-  // After StockLists updates triggers the 2nd useEffect below and resetFormInputs executes
-  // setCurrentPrice resets/updates and triggers this useEffect to addNewStock with no user data.
+  // previously if(formSubmitted) condition was not added to the useEffect with newStockData caused a bug
+  // After StockLists updates triggers the 2nd useEffect and resetFormInputs executes
+  // setCurrentPrice("") updates and triggers this addNewStock's useEffect with no user data.
   // it added a 2nd objecct that is empty to the stockData state
   // the .map found that it has 2 objects in the stockData array, one with data and one empty and rendered both.
 
