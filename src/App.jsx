@@ -96,7 +96,7 @@ function Form() {
 
 
 // have to check for "Information" key as that is in the JSON file of the AlphaVantage message
-// but should use above when you get the API key available to check if the 
+// but should use above when you get the API key when the daily limit resets
 
   if(data["Information"]) { 
 
