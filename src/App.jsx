@@ -6,17 +6,13 @@ import StockLists from './StockLists.jsx';
 import { useCallback } from 'react';
 
 
-
-//For simplifying all the input details, to try when there is time
-//https://www.youtube.com/watch?v=-KBS93RlUCY
-
 function App() {
   const [userStock, setUserStock] = useState("");
   const [userQuantity, setUserQuantity] = useState("");
   const [userPurchase, setUserPurchase] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [stockData, setStockData] = useState([]); //empty array to store all the imconing object data for .map() to look through
+  const [stockData, setStockData] = useState([]);
   
   
   return (
@@ -65,38 +61,51 @@ function Form() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setFormSubmitted(true)
-    checkStockValid();
-    console.log(`Stock Data on Submit show previous data ${JSON.stringify(stockData)}`)
+    // console.log(`handleSubmit called, fetching API data & checking Validitiy`)
   }
 
-  function resetFormOnError() {
-    setUserStock("")
-    setUserQuantity("")
-    setUserPurchase("")
-    setFormSubmitted(false);
-    console.log("Stock not found - Reset input fields and formSubmit to false!")
-  }
+  useEffect(()=>{
+    if(formSubmitted){
+      checkStockValid();
+    }
+  }, [formSubmitted])
+
 
   const checkStockValid = useCallback(()=>[
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo")
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
     .then((res) => res.json())
-    .then((data) => {
-      if(data["Information"]) {
+     .then((data) => {
 
-        console.error("Invalid Stock Symbol Received AlphaVantage demo message- resetting form"); // this is to test logic with the demo key
+      if(Object.keys(data["Global Quote"]).length === 0 ) {    // invalid stock symbol returns empty object
+       
+        console.error("Invalid Stock Symbol : recieved empty object - resetting form");
         resetFormOnError();
 
+      } else if(Object.keys(data["Global Quote"]).length > 0){
+       
+        // console.log(`Data received from API is Valid, calling updateCurentPrice`);
+        updateCurrentPrice(data["Global Quote"]["05. price"]);      
+         
+      }
+     })
+  ]
+  ,[userStock])
 
-    } else if(Object.keys(data["Global Quote"]).length > 0) {
 
-      setCurrentPrice(data["Global Quote"]["05. price"]);
-      console.log(`Data received from API and setCurrent price to ${data["Global Quote"]["05. price"]}`)   
-           
-    }
-   
- })
-]
-,[userStock])
+
+function updateCurrentPrice(price) {
+  setCurrentPrice(price);
+  // console.log(`updateCurrentPrice is called, setCurrent price to ${price}`)   
+
+};
+
+function resetFormOnError() {
+  setUserStock("")
+  setUserQuantity("")
+  setUserPurchase("")
+  setFormSubmitted(false);
+  // console.log("Stock not found - Reset input fields and formSubmit to false!")
+}
 
 
 
@@ -119,6 +128,7 @@ function Form() {
           value={userQuantity}
           onChange={(event) => setUserQuantity(event.target.value)}
           type="number"
+          min="0"
           id="quantity"
           name="quantity"
           placeholder="Quantity"
@@ -128,6 +138,7 @@ function Form() {
           value={userPurchase}
           onChange={(event) => setUserPurchase(event.target.value)}
           type="number"
+          min="0"
           id="price"
           name="price"
           placeholder="Purchase Price"
@@ -151,14 +162,17 @@ function Form() {
 
 function StockContainer() {
 
-  const {formSubmitted, currentPrice} = useContext(StockDataContext);
+  const {currentPrice} = useContext(StockDataContext);
   const [isEmpty, setIsEmpty] = useState(true);
 
-useEffect(() => {
-  if(formSubmitted && currentPrice) {
-      setIsEmpty(false);  
-  }    
-}, [currentPrice])
+
+  useEffect(() => {
+    if (currentPrice){
+      setIsEmpty(false);
+// console.log("Switching emptyStocklist out for Stocklist");
+    }
+  },[currentPrice])
+
 
   return (
     <>
