@@ -1,19 +1,36 @@
 import './App.css'
-import StockListsEmpty from './StockListsEmpty.jsx'
-import StockLists from './StockLists.jsx'
-import { useEffect, useState } from 'react'
-import StockContainer from './StockContainer.jsx'
+import { useContext, useEffect, useState } from 'react'
+import StockDataContext from './contexts/StockdataContext.js'
+import StockListsEmpty from './StockListsEmpty.jsx';
+import StockLists from './StockLists.jsx';
+import { useCallback } from 'react';
+
 
 function App() {
+  const [userStock, setUserStock] = useState("");
+  const [userQuantity, setUserQuantity] = useState("");
+  const [userPurchase, setUserPurchase] = useState("");
+  const [currentPrice, setCurrentPrice] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [stockData, setStockData] = useState([]);
+  
+  
   return (
     <>
     <div className="h-dvh w-full flex justify-center items-center">
-      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
-        <div className="h-[16em] flex flex-col">
+      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[85vh] rounded-[35px] bg-[#4a4e69] border-box shadow-lg'>
           <Header />
-          <Form/>
-        </div>
-          <StockContainer />
+            <StockDataContext.Provider value={{ 
+              userStock, setUserStock, 
+              userQuantity, setUserQuantity, 
+              userPurchase, setUserPurchase, 
+              currentPrice, setCurrentPrice,
+              formSubmitted, setFormSubmitted,
+              stockData, setStockData
+              }} >
+             <Form/>
+             <StockContainer />
+            </StockDataContext.Provider>
       </div>
     </div>
  
@@ -24,106 +41,108 @@ function App() {
 function Header() {
   return (
     <header className="flex flex-col items-center">
-    <h1 className='w-full text-[1.25rem] pt-6 pb-4 font-title font-bold text-white text-center'>Finance Dashboard</h1>
-    <hr className="w-[90%]"></hr>
+      <h1 id="title" className='w-full text-[1.25rem] pt-6 pb-4 font-title font-bold text-white text-center'>Finance Dashboard</h1>
+      <hr className="w-[90%]"></hr>
     </header>
   )
 }
 
 function Form() {
  
-  //check state of form and store infomation
-  const [formData, setFormData] = useState({
-    stock:"",
-    quantity:"",
-    purchase:"",
-    currentPrice:""
-  })
-
-  //check state of form submission
-  const [formSubmitted, setFormSubmitted] = useState(false)
-
-  //check state of stock symbol input validation
-  const [stockValid, setStockValid] = useState(false)
+  const {
+    userStock, setUserStock,
+    userQuantity, setUserQuantity,
+    userPurchase, setUserPurchase,
+    currentPrice, setCurrentPrice, //current price for checking
+    formSubmitted, setFormSubmitted,
+    stockData
+  } = useContext(StockDataContext);
 
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     setFormSubmitted(true)
+    // console.log(`handleSubmit called, fetching API data & checking Validitiy`)
   }
 
-// reset form to default
-  const resetForm = () => {
-    if (formSubmitted === true) {
-    setFormSubmitted(false)  
-    setFormData({...formData,
-      stock:"",
-      quantity:"",
-      purchase:""
-    })
-    setStockValid(false)
+  useEffect(()=>{
+    if(formSubmitted){
+      checkStockValid();
     }
-  }
+  }, [formSubmitted])
 
-useEffect(() => {
-   fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo")
+
+  const checkStockValid = useCallback(()=>[
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
     .then((res) => res.json())
-    .then((data) => {
+     .then((data) => {
 
-      //renaming specific data points from API for easier use
-      const globalQuote = data["Global Quote"]
-      const stockSymbol = globalQuote["01. symbol"]
-      const price = globalQuote["05. price"]
+      if(Object.keys(data["Global Quote"]).length === 0 ) {    // invalid stock symbol returns empty object
+       
+        console.error("Invalid Stock Symbol : recieved empty object - resetting form");
+        resetFormOnError();
 
-         if (formSubmitted === true) {
-            for (data in globalQuote) {
-              if (formData.stock === stockSymbol) {
-                setStockValid(true);
-                setFormData({...formData, currentPrice: {price}});
-                console.log(`Current Price: ${price}`);
-                console.log(`Form Submitted with user data ${formData.stock}, ${formData.quantity}, ${formData.purchase} and API data here: ${formData.currentPrice}`)
-                break;
+      } else if(Object.keys(data["Global Quote"]).length > 0){
+       
+        // console.log(`Data received from API is Valid, calling updateCurentPrice`);
+        updateCurrentPrice(data["Global Quote"]["05. price"]);      
+         
+      }
+     })
+  ]
+  ,[userStock])
 
-              } else if (formSubmitted === true && formData.stock !== stockSymbol) {
-                console.log("Stock not found")//Possiblity to add display validation alert to user
-                break;
-              }
-            }
-          } 
-        })
-    .catch((err) => console.log("Error occured retrieving data"))
-    .finally(resetForm) //Call external function to execute after getting data, to reset inputs back into empty & FormSubmitted back to false
 
-}, [formSubmitted, setFormData])
+
+function updateCurrentPrice(price) {
+  setCurrentPrice(price);
+  // console.log(`updateCurrentPrice is called, setCurrent price to ${price}`)   
+
+};
+
+function resetFormOnError() {
+  setUserStock("")
+  setUserQuantity("")
+  setUserPurchase("")
+  setFormSubmitted(false);
+  // console.log("Stock not found - Reset input fields and formSubmit to false!")
+}
+
+
 
  return (
   <>
     <form onSubmit={handleSubmit} value={formSubmitted} className='h-full flex flex-col items-center font-title font-light'>
 
-        <div className="h-[5.5em] mt-8 w-full flex flex-col justify-center items-center" id="input-container">
+        <div className="h-[7.5em] mt-8 w-full flex flex-col justify-evenly items-center my-3" id="input-container">
 
-          <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.stock}
-          onChange={(event) => setFormData({...formData, stock: event.target.value})}
+          <input className="h-[1.7rem] w-[9em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
+          value={userStock}
+          onChange={(event) => setUserStock(event.target.value.toLocaleUpperCase())} //Prevent cases of lower case Stock Symbols being submitted
           type="text"
           id="stock"
           name="stock"
-          placeholder="Stock Symbol"></input>
+          placeholder="Stock Symbol"
+          required ></input>
 
-          <input className=" h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.quantity}
-          onChange={(event) => setFormData({...formData, quantity: event.target.value})}
-          type="text"
+          <input className=" h-[1.7rem] w-[9em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
+          value={userQuantity}
+          onChange={(event) => setUserQuantity(event.target.value)}
+          type="number"
+          min="0"
           id="quantity"
           name="quantity"
-          placeholder="Quantity" ></input>
+          placeholder="Quantity"
+          required  ></input>
 
-          <input className="h-9 w-[10em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
-          value={formData.purchase}
-          onChange={(event) => setFormData({...formData, purchase: event.target.value})}
-          type="text"
+          <input className="h-[1.7rem] w-[9em] min-w-0 mx-2 pl-3 placeholder:italic placeholder:text-[0.8em]"
+          value={userPurchase}
+          onChange={(event) => setUserPurchase(event.target.value)}
+          type="number"
+          min="0"
           id="price"
           name="price"
-          placeholder="Purchase Price"></input>
+          placeholder="Purchase Price"
+          required ></input>
 
         </div>
 
@@ -131,6 +150,7 @@ useEffect(() => {
 
           <input className="h-8 w-[8rem] text-[0.75rem] font-bold text-white rounded-[5em]"
           type="submit" value="Add Stock" id="submitBtn"/>
+
 
         </div>
 
@@ -140,16 +160,34 @@ useEffect(() => {
 }
 
 
+function StockContainer() {
+
+  const {currentPrice} = useContext(StockDataContext);
+  const [isEmpty, setIsEmpty] = useState(true);
+
+
+  useEffect(() => {
+    if (currentPrice){
+      setIsEmpty(false);
+// console.log("Switching emptyStocklist out for Stocklist");
+    }
+  },[currentPrice])
+
+
+  return (
+    <>
+      <section className="font-title h-[80%] bg-[#4a4e69] rounded-b-[35px] pt-3 "> 
+        <h2 id="subheading" className="text-[1.1rem] w-full text-center text-white font-bold">Stock List</h2>
+        <div className="h-full mb-10 flex justify-center">
+          {isEmpty ?  <StockListsEmpty /> : <StockLists />}
+        </div>  
+      </section>
+    </>
+  )
+  
+}
+
 
 export default App
-
-
-//* Consider implementing conditional rendering to switch between
-// displaying the StockListsEmpty and StockLists components.
-// For example, you can use a ternary operator or logical conditions
-//  to decide which component to render based on the state of the stock list.
-
-// Fetch the current stock prices from the API when the component mounts and
-// whenever the stock list is updated.
 
 
