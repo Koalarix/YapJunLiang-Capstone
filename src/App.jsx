@@ -16,6 +16,8 @@ function App() {
   const [userPurchase, setUserPurchase] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [stockData, setStockData] = useState([]) //empty array to store all the imconing object data for .map() to look through
+  
   
   return (
     <>
@@ -27,7 +29,8 @@ function App() {
               userQuantity, setUserQuantity, 
               userPurchase, setUserPurchase, 
               currentPrice, setCurrentPrice,
-              formSubmitted, setFormSubmitted
+              formSubmitted, setFormSubmitted,
+              stockData, setStockData
               }} >
              <Form/>
              <StockContainer />
@@ -55,13 +58,15 @@ function Form() {
     userQuantity, setUserQuantity,
     userPurchase, setUserPurchase,
     currentPrice, setCurrentPrice, //current price for checking
-    formSubmitted, setFormSubmitted
+    formSubmitted, setFormSubmitted,
+    stockData
   } = useContext(StockDataContext);
 
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     setFormSubmitted(true)
     checkStockValid();
+    console.log(`Stock Data on Submit ${JSON.stringify(stockData)}`)
   }
 
   function resetFormInputs() {
@@ -79,14 +84,14 @@ function Form() {
      .then((data) => {
 
 
-
+//COMMENT - this code is to be used when fetching from actual API 
   //     if(Object.keys(data["Global Quote"]).length === 0 ) {    // invalid stock symbol returns empty object
   //       console.error("Invalid Stock Symbol : recieved empty object - reseting form");
 
   //       resetFormInputs();
 
   //     } else if(Object.keys(data["Global Quote"]).length > 0){  
-  //         setCurrentPrice(data["Global Quote"]["05. price"])        
+  //         setCurrentPrice(data["Global Quote"]["05. price"]);        
   //     }
   //    })
   // ]
@@ -94,7 +99,7 @@ function Form() {
 
 
 
-
+// COMMENT - this code is to be used when fetching from demo API
 // have to check for "Information" key as that is in the JSON file of the AlphaVantage demo message
 // but should use the code above when you get the API key when the daily limit resets
 
@@ -104,40 +109,14 @@ function Form() {
     resetFormInputs();
 
   } else if(Object.keys(data["Global Quote"]).length > 0) {
-    setCurrentPrice(data["Global Quote"]["05. price"])        
+    setCurrentPrice(data["Global Quote"]["05. price"]);
+    console.log(`Current price has been set to ${data["Global Quote"]["05. price"]}`)        
   }
     
  })
 ]
 ,[formSubmitted, userStock])
 
-
-
-
-// fetch without Stock Symbol Validation - it will log out the invalid symbol with the user input without fetching prices
-  // const getStockPrice = useCallback(() =>{
-  //   // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo
-  //   fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
-  //    .then((res) => res.json())
-  //    .then((data) => {
-  //     setCurrentPrice(data["Global Quote"]["05. price"])
-  //    })
-  //    .catch(error => {
-  //     console.error("Invalid Stock Symbol - Please input a valid Stock Symbol! reseting form");
-  //     resetFormInputs();
-  //   })
-  // },[userStock])
-
-// useEffect(() => {
-//   if(formSubmitted) {
-//     getStockPrice();
-//     }
-//  }, [formSubmitted, getStockPrice])
-
- // for me to check if the API data is logged into the state// comment out on deploy
-//  useEffect(() => {
-//   console.log(`This is to check if it logged into state, Current Price is: ${currentPrice}`);
-// }, [currentPrice]);
 
 
  return (

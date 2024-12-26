@@ -10,10 +10,11 @@ function StockLists() {
     userQuantity, setUserQuantity,
     userPurchase, setUserPurchase,
     currentPrice, setCurrentPrice,
-    formSubmitted, setFormSubmitted
+    formSubmitted, setFormSubmitted,
+    stockData, setStockData
   } = useContext(StockDataContext);
 
-  const [stockData, setStockData] = useState([]) //empty array to store all the imconing object data for .map() to look through
+
 
 
   function newStockData() {
@@ -34,9 +35,12 @@ function StockLists() {
 
 
   useEffect(() => {
+    if(formSubmitted){
     console.log("1 list updated");
-    console.log(stockData) //this is for me to check if the userData gets updated
+  //this is for me to check if the userData gets updated
+    console.log(`Checking stock Data after List render ${JSON.stringify(stockData)}`)
     resetFormInputs();
+  }
   },[stockData])
 
 
