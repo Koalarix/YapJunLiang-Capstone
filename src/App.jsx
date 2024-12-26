@@ -15,14 +15,14 @@ function App() {
   const [userQuantity, setUserQuantity] = useState("");
   const [userPurchase, setUserPurchase] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false)
-  const [stockData, setStockData] = useState([]) //empty array to store all the imconing object data for .map() to look through
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [stockData, setStockData] = useState([]); //empty array to store all the imconing object data for .map() to look through
   
   
   return (
     <>
     <div className="h-dvh w-full flex justify-center items-center">
-      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[60em] rounded-[35px] bg-[#4a4e69] shadow-lg'>
+      <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[85vh] rounded-[35px] bg-[#4a4e69] border-box shadow-lg'>
           <Header />
             <StockDataContext.Provider value={{ 
               userStock, setUserStock, 
@@ -66,10 +66,10 @@ function Form() {
     event.preventDefault();
     setFormSubmitted(true)
     checkStockValid();
-    console.log(`Stock Data on Submit ${JSON.stringify(stockData)}`)
+    console.log(`Stock Data on Submit show previous data ${JSON.stringify(stockData)}`)
   }
 
-  function resetFormInputs() {
+  function resetFormOnError() {
     setUserStock("")
     setUserQuantity("")
     setUserPurchase("")
@@ -78,44 +78,25 @@ function Form() {
   }
 
   const checkStockValid = useCallback(()=>[
-    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo") // demo Comment off on deploy
-    // fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=6DNFSUAJZ4VJJNWN")
+    fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="+ userStock +"&apikey=demo")
     .then((res) => res.json())
-     .then((data) => {
+    .then((data) => {
+      if(data["Information"]) {
+
+        console.error("Invalid Stock Symbol Received AlphaVantage demo message- resetting form"); // this is to test logic with the demo key
+        resetFormOnError();
 
 
-//COMMENT - this code is to be used when fetching from actual API 
-  //     if(Object.keys(data["Global Quote"]).length === 0 ) {    // invalid stock symbol returns empty object
-  //       console.error("Invalid Stock Symbol : recieved empty object - reseting form");
+    } else if(Object.keys(data["Global Quote"]).length > 0) {
 
-  //       resetFormInputs();
-
-  //     } else if(Object.keys(data["Global Quote"]).length > 0){  
-  //         setCurrentPrice(data["Global Quote"]["05. price"]);        
-  //     }
-  //    })
-  // ]
-  // ,[formSubmitted, userStock])
-
-
-
-// COMMENT - this code is to be used when fetching from demo API
-// have to check for "Information" key as that is in the JSON file of the AlphaVantage demo message
-// but should use the code above when you get the API key when the daily limit resets
-
-  if(data["Information"]) { 
-
-    console.error("Invalid Stock Symbol Received AlphaVantage demo message- reseting form"); // this is to test logic with the demo key
-    resetFormInputs();
-
-  } else if(Object.keys(data["Global Quote"]).length > 0) {
-    setCurrentPrice(data["Global Quote"]["05. price"]);
-    console.log(`Current price has been set to ${data["Global Quote"]["05. price"]}`)        
-  }
-    
+      setCurrentPrice(data["Global Quote"]["05. price"]);
+      console.log(`Data received from API and setCurrent price to ${data["Global Quote"]["05. price"]}`)   
+           
+    }
+   
  })
 ]
-,[formSubmitted, userStock])
+,[userStock])
 
 
 
@@ -159,6 +140,7 @@ function Form() {
           <input className="h-8 w-[8rem] text-[0.75rem] font-bold text-white rounded-[5em]"
           type="submit" value="Add Stock" id="submitBtn"/>
 
+
         </div>
 
     </form>
@@ -180,7 +162,7 @@ useEffect(() => {
 
   return (
     <>
-      <section className="font-title h-full bg-[#4a4e69] rounded-b-[35px] pt-3"> 
+      <section className="font-title h-[80%] bg-[#4a4e69] rounded-b-[35px] pt-3 "> 
         <h2 id="subheading" className="text-[1.1rem] w-full text-center text-white font-bold">Stock List</h2>
         <div className="h-full mb-10 flex justify-center">
           {isEmpty ?  <StockListsEmpty /> : <StockLists />}

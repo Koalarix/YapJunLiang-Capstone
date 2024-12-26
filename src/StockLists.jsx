@@ -1,5 +1,5 @@
 import './App.css'
-import { useContext, useEffect, useLayoutEffect, useState } from "react"
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import StockDataContext from "./contexts/StockdataContext";
 
 
@@ -14,10 +14,12 @@ function StockLists() {
     stockData, setStockData
   } = useContext(StockDataContext);
 
+  const effectHasRun = useRef(false);
 
 
+const newStockData = () => {
 
-  function newStockData() {
+  if (formSubmitted) {
     
     const addNewStock = { Symbol: userStock,
                           Quantity: userQuantity,
@@ -25,21 +27,24 @@ function StockLists() {
                           Current: currentPrice };
 
     setStockData(stockData => stockData.concat(addNewStock))
-  }
+  }}
 
 
   useEffect(()=>{
-    if(formSubmitted) {   
-      newStockData()
-    }}, [currentPrice]) 
+    if(currentPrice != "" && !effectHasRun.current) {   
+      newStockData();
+      effectHasRun.current = true;
+      setFormSubmitted(false);
+    }}, [currentPrice]); 
 
 
   useEffect(() => {
-    if(formSubmitted){
-    console.log("1 list updated");
+    if(formSubmitted === false){
+    resetFormInputs();
+    console.log("stockData updated, .map generate a 1 list");
   //this is for me to check if the userData gets updated
     console.log(`Checking stock Data after List render ${JSON.stringify(stockData)}`)
-    resetFormInputs();
+
   }
   },[stockData])
 
@@ -48,8 +53,8 @@ function StockLists() {
     setUserStock("")
     setUserQuantity("")
     setUserPurchase("")
-    setCurrentPrice("") 
-    setFormSubmitted(false)
+    setCurrentPrice("")
+    effectHasRun.current = false; 
     console.log("Listed a Stock - Reset input fields and formSubmit to false!")
   }
   
