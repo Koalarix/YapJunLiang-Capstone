@@ -1,6 +1,6 @@
 import './App.css'
 import { useContext, useEffect, useState } from 'react'
-import StockDataContext from './contexts/StockdataContext.js'
+import StockContext from './contexts/StockContext.js'
 import StockListsEmpty from './StockListsEmpty.jsx';
 import StockLists from './StockLists.jsx';
 import { useCallback } from 'react';
@@ -20,7 +20,7 @@ function App() {
     <div className="h-dvh w-full flex justify-center items-center">
       <div className='w-[60%] min-w-[18em] max-w-[50em] max-h-[85vh] rounded-[35px] bg-[#4a4e69] border-box shadow-lg'>
           <Header />
-            <StockDataContext.Provider value={{ 
+            <StockContext.Provider value={{ 
               userStock, setUserStock, 
               userQuantity, setUserQuantity, 
               userPurchase, setUserPurchase, 
@@ -30,7 +30,7 @@ function App() {
               }} >
              <Form/>
              <StockContainer />
-            </StockDataContext.Provider>
+            </StockContext.Provider>
       </div>
     </div>
  
@@ -56,7 +56,7 @@ function Form() {
     currentPrice, setCurrentPrice, //current price for checking
     formSubmitted, setFormSubmitted,
     stockData
-  } = useContext(StockDataContext);
+  } = useContext(StockContext);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -162,7 +162,7 @@ function resetFormOnError() {
 
 function StockContainer() {
 
-  const {currentPrice} = useContext(StockDataContext);
+  const {currentPrice} = useContext(StockContext);
   const [isEmpty, setIsEmpty] = useState(true);
 
 
